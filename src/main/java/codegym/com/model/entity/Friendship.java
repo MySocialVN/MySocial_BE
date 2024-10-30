@@ -29,9 +29,9 @@ public class Friendship {
     @JoinColumn(name = "friend_id")
     private User friend;
 
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private FriendshipStatus friendshipStatus; // Thay đổi thành Enum
 
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;
-
 }

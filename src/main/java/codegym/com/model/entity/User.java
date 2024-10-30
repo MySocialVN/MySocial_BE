@@ -24,7 +24,10 @@ public class User {
     private String email;
     private String password;
     private String avatar;
-    private String status;
+    private String fullName;
+    private String phone;
+    private String address;
+    private String interests;
 
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;
