@@ -1,12 +1,19 @@
 package codegym.com.model.entity;
+
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.format.annotation.DateTimeFormat;
 
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -20,17 +27,30 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "Tên người dùng không được để trống")
+    @Pattern(regexp = "^[a-zA-Z0-9]*$", message = "Tên người dùng chỉ được chứa chữ cái và số, không có ký tự đặc biệt")
     private String username;
-    private String email;
+
+
+    @NotBlank(message = "Tên người dùng không được để trống")
     private String password;
+
+    @Transient
+    private String confirmPassword;
+
+    private String email;
+
+
     private String avatar;
     private String fullName;
-    private String phone;
+    private String phoneNumber;
     private String address;
     private String interests;
 
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date createdAt;
+    @DateTimeFormat(pattern = "dd-MM-yyyy")
+    private LocalDate birthday;
+
+    private LocalDateTime createdAt;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
