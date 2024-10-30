@@ -9,4 +9,10 @@ import java.util.Optional;
 public interface IUserService extends IGenerateService<User>, UserDetailsService {
     User findByUsername(String username);
 
+    String registerNewUser(User user);
+
+    boolean existsByEmail(String email);
+
+    boolean existsByUsername(String username);
+
 }
