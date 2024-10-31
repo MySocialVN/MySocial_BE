@@ -15,4 +15,7 @@ public interface IUserService extends IGenerateService<User>, UserDetailsService
 
     boolean existsByUsername(String username);
 
+    User findByEmail(String email);
+
+
 }
