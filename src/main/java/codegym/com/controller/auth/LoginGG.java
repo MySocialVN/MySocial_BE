@@ -83,6 +83,7 @@ public class LoginGG {
 
             // Lưu thông tin người dùng vào cơ sở dữ liệu
             String email = (String) userAttributes.get("email");
+            String sanitizedUsername = email.replaceAll("[^a-zA-Z0-9]", "");
             String fullName = (String) userAttributes.get("name");
             String avatar = (String) userAttributes.get("picture");
 
@@ -90,7 +91,7 @@ public class LoginGG {
             User user = userService.findByEmail(email);
             if (user == null) {
                 user = new User();
-                user.setUsername(email);
+                user.setUsername(sanitizedUsername);
                 user.setEmail(email);
                 user.setFullName(fullName);
                 user.setAvatar(avatar);
@@ -130,7 +131,7 @@ public class LoginGG {
             // Generate token
             String token = jwtService.generateTokenLogin(authentication);
 
-            String redirectUrl = determineRedirectUrl(user.getRoles()) + "?token=" + token;
+            String redirectUrl = determineRedirectUrl(user.getRoles()) ;
             return ResponseEntity.status(HttpStatus.FOUND).location(URI.create(redirectUrl)).build();
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Authentication failed: " + e.getMessage());
