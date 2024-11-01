@@ -10,6 +10,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
@@ -47,10 +48,12 @@ public class User {
     private String address;
     private String interests;
 
-    @DateTimeFormat(pattern = "dd-MM-yyyy")
     private LocalDate birthday;
 
+    @Column(name = "created_at", nullable = false, updatable = false)
+    @CreationTimestamp
     private LocalDateTime createdAt;
+
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
