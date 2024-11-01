@@ -14,6 +14,7 @@ public class UserProfileMapper {
                 user.getAddress(),
                 user.getPhoneNumber(),
                 user.getEmail(),
+                user.getInterests(),
                 user.getBirthday()
         );
     }

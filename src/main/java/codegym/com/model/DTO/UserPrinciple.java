@@ -11,10 +11,12 @@ import java.util.Collection;
 import java.util.List;
 
 public class UserPrinciple implements UserDetails {
+    private final Long id;
     private final String username;
     private final String password;
     private final Collection<? extends GrantedAuthority> authorities;
-    public UserPrinciple(String username, String password, Collection<? extends GrantedAuthority> authorities) {
+    public UserPrinciple(Long id, String username, String password, Collection<? extends GrantedAuthority> authorities) {
+        this.id = id;
         this.username = username;
         this.password = password;
         this.authorities = authorities;
@@ -24,7 +26,11 @@ public class UserPrinciple implements UserDetails {
         for (Role role : user.getRoles()) {
             authorities.add(new SimpleGrantedAuthority(role.getName().name()));
         }
-        return new UserPrinciple(user.getUsername(), user.getPassword(), authorities);
+        return new UserPrinciple(user.getId(), user.getUsername(), user.getPassword(), authorities);
+    }
+
+    public Long getId() {
+        return id;
     }
 
 

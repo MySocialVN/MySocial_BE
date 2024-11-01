@@ -18,6 +18,6 @@ public class UserProfileDTO {
     private String address;
     private String phoneNumber;
     private String email;
-    @JsonFormat(pattern = "dd-MM-yyyy")
+    private String interests;
     private LocalDate birthday; // Định dạng dd-MM-yyyy khi serialize
 }

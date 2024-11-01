@@ -1,6 +1,7 @@
 package codegym.com.service.user;
 
 import codegym.com.model.DTO.UserPrinciple;
+import codegym.com.model.DTO.UserProfileDTO;
 import codegym.com.model.entity.Role;
 import codegym.com.model.entity.User;
 
@@ -14,6 +15,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
@@ -102,5 +104,20 @@ public class UserService implements IUserService {
     @Override
     public boolean existsByUsername(String username) {
         return userRepository.existsByUsername(username);
+    }
+
+    @Override
+    public void updateUser(User currentUser, UserProfileDTO userProfileDTO) {
+        currentUser.setFullName(userProfileDTO.getFullName());
+        if(Objects.equals(userProfileDTO.getAvatar(), null)){
+            currentUser.setAvatar("https://firebasestorage.googleapis.com/v0/b/home-dn.appspot.com/o/images%2Favatar.jpg?alt=media&token=f43bdd14-8aa5-4364-afc7-509f6f72a172");
+        } else {
+            currentUser.setAvatar(userProfileDTO.getAvatar());
+        }
+        currentUser.setPhoneNumber(userProfileDTO.getPhoneNumber());
+        currentUser.setAddress(userProfileDTO.getAddress());
+        currentUser.setInterests(userProfileDTO.getInterests());
+        currentUser.setBirthday(userProfileDTO.getBirthday());
+        userRepository.save(currentUser);
     }
 }
