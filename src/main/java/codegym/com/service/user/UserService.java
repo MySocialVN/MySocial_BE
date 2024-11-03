@@ -120,4 +120,21 @@ public class UserService implements IUserService {
         currentUser.setBirthday(userProfileDTO.getBirthday());
         userRepository.save(currentUser);
     }
+
+    @Override
+    public boolean changePassword(User user, String oldPassword, String newPassword) {
+        if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
+            return false;
+        }
+
+        // Mã hóa mật khẩu mới và lưu lại
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+        return true;
+    }
+
+    @Override
+    public Iterable<User> findByFullNameContainingIgnoreCase(String username) {
+        return userRepository.findByFullNameContainingIgnoreCase(username);
+    }
 }

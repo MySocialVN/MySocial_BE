@@ -17,4 +17,9 @@ public interface IUserService extends IGenerateService<User>, UserDetailsService
     boolean existsByUsername(String username);
 
     public void updateUser(User currentUser, UserProfileDTO userProfileDTO);
+
+    boolean changePassword(User user, String oldPassword, String newPassword);
+
+    Iterable<User> findByFullNameContainingIgnoreCase(String username);
+
 }
