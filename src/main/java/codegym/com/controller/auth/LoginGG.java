@@ -123,7 +123,7 @@ public class LoginGG {
             authorities.add(new SimpleGrantedAuthority(Role.RoleType.ROLE_USER.name()));
 
             // Create an instance of UserPrinciple (custom UserDetails implementation)
-            UserPrinciple userPrinciple = new UserPrinciple(user.getEmail(), user.getPassword(), authorities);
+            UserPrinciple userPrinciple = new UserPrinciple(user.getId(), user.getEmail(), user.getPassword(), authorities);
 
             // Create authentication token
             UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userPrinciple, null, authorities);

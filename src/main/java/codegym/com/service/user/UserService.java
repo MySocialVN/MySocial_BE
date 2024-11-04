@@ -1,6 +1,7 @@
 package codegym.com.service.user;
 
 import codegym.com.model.DTO.UserPrinciple;
+import codegym.com.model.DTO.UserProfileDTO;
 import codegym.com.model.entity.Role;
 import codegym.com.model.entity.User;
 
@@ -14,6 +15,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
@@ -105,7 +107,41 @@ public class UserService implements IUserService {
     }
 
     @Override
+
+    public void updateUser(User currentUser, UserProfileDTO userProfileDTO) {
+        currentUser.setFullName(userProfileDTO.getFullName());
+        if(Objects.equals(userProfileDTO.getAvatar(), null)){
+            currentUser.setAvatar("https://firebasestorage.googleapis.com/v0/b/home-dn.appspot.com/o/images%2Favatar.jpg?alt=media&token=f43bdd14-8aa5-4364-afc7-509f6f72a172");
+        } else {
+            currentUser.setAvatar(userProfileDTO.getAvatar());
+        }
+        currentUser.setPhoneNumber(userProfileDTO.getPhoneNumber());
+        currentUser.setAddress(userProfileDTO.getAddress());
+        currentUser.setInterests(userProfileDTO.getInterests());
+        currentUser.setBirthday(userProfileDTO.getBirthday());
+        userRepository.save(currentUser);
+    }
+
+    @Override
+    public boolean changePassword(User user, String oldPassword, String newPassword) {
+        if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
+            return false;
+        }
+
+        // Mã hóa mật khẩu mới và lưu lại
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+        return true;
+    }
+
+    @Override
+    public Iterable<User> findByFullNameContainingIgnoreCase(String username) {
+        return userRepository.findByFullNameContainingIgnoreCase(username);
+    }
+
+    @Override
     public User findByEmail(String email) {
         return userRepository.findByEmail(email);
+
     }
 }

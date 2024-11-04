@@ -34,4 +34,10 @@ public class Friendship {
 
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;
+
+    public Friendship(User user, User friend) {
+        this.user = user;
+        this.friend = friend;
+        this.friendshipStatus = FriendshipStatus.PENDING;
+    }
 }
