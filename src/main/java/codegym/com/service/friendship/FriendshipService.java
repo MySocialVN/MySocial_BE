@@ -33,15 +33,6 @@ public class FriendshipService implements IFriendshipService {
 
 
 
-    public void acceptFriendRequest(Friendship friendship) {
-        friendship.setFriendshipStatus(FriendshipStatus.ACCEPTED);
-        friendshipRepository.save(friendship);
-    }
-
-    public void rejectFriendRequest(Friendship friendship) {
-        friendshipRepository.delete(friendship);
-    }
-
     @Override
     public Iterable<Friendship> findAll() {
         return friendshipRepository.findAll();
@@ -93,5 +84,16 @@ return friendshipRepository.existsByUserAndFriend(user, friend);    }
         }
     }
 
+    @Override
+    public void acceptFriendRequest(User user, Long friendId) {
+        // Tìm yêu cầu kết bạn
+        Friendship friendship = friendshipRepository.findByUserIdAndFriendId(friendId, user.getId());
+        if (friendship != null && friendship.getFriendshipStatus() == FriendshipStatus.PENDING) {
+            friendship.setFriendshipStatus(FriendshipStatus.ACCEPTED); // Cập nhật trạng thái
+            friendshipRepository.save(friendship);
+        } else {
+            throw new RuntimeException("Friend request not found or already accepted.");
+        }
+    }
 }
 

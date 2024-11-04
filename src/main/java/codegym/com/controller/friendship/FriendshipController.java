@@ -51,64 +51,6 @@ public class FriendshipController {
         return ResponseEntity.ok("Friend request sent.");
     }
 
-    @PostMapping("/reject/{friendshipId}")
-    public ResponseEntity<String> rejectFriendRequest(@PathVariable Long friendshipId) {
-        Optional<Friendship> friendshipOptional = friendshipService.findById(friendshipId);
-        if (friendshipOptional.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Friendship not found.");
-        }
-
-        Friendship friendship = friendshipOptional.get();
-        friendshipService.rejectFriendRequest(friendship);
-        return ResponseEntity.ok("Friend request rejected.");
-    }
-    @PostMapping("/accept/{friendshipId}")
-    public ResponseEntity<String> acceptFriendRequest(@PathVariable Long friendshipId) {
-        // Lấy thông tin người dùng đang đăng nhập
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Long userId = null;
-
-        // Kiểm tra xác thực người dùng
-        if (authentication != null && authentication.getPrincipal() instanceof UserPrinciple) {
-            UserPrinciple userDetails = (UserPrinciple) authentication.getPrincipal();
-            userId = userDetails.getId();
-        }
-
-        if (userId == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized access.");
-        }
-
-        // Tìm người dùng hiện tại
-        Optional<User> optionalCurrentUser = userService.findById(userId);
-        if (optionalCurrentUser.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found.");
-        }
-
-        User currentUser = optionalCurrentUser.get();
-
-        // Tìm kiếm Friendship dựa trên friendshipId
-        Optional<Friendship> friendshipOptional = friendshipService.findById(friendshipId);
-        if (friendshipOptional.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Friendship not found.");
-        }
-
-        Friendship friendship = friendshipOptional.get();
-
-        // Kiểm tra xem người dùng đang đăng nhập có phải là người nhận yêu cầu kết bạn không
-        if (!Objects.equals(friendship.getUser().getId(), currentUser.getId())) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("You are not allowed to accept this friend request.");
-        }
-
-        // Kiểm tra trạng thái của friendship
-        if (friendship.getFriendshipStatus() != FriendshipStatus.PENDING) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("This friend request has already been accepted or denied.");
-        }
-
-        // Chấp nhận yêu cầu kết bạn
-        friendshipService.acceptFriendRequest(friendship);
-        return ResponseEntity.ok("Friend request accepted.");
-    }
-
     @DeleteMapping("/request/{friendId}")
     public ResponseEntity<String> cancelFriendRequest(@PathVariable Long friendId, Authentication authentication) {
         // Kiểm tra xác thực
@@ -127,6 +69,30 @@ public class FriendshipController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to cancel friend request.");
         }
     }
+
+    @PutMapping("/accept/{friendId}")
+    public ResponseEntity<String> acceptFriendRequest(@PathVariable Long friendId, Authentication authentication) {
+        // Kiểm tra xác thực
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
+        }
+
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        User user = userService.findByUsername(userDetails.getUsername());
+
+        try {
+            // Chấp nhận lời mời kết bạn
+            friendshipService.acceptFriendRequest(user, friendId);
+            return ResponseEntity.ok("Friend request accepted successfully.");
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to accept friend request.");
+        }
+    }
+
+
+
 
 
 }
