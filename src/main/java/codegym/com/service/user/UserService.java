@@ -83,7 +83,7 @@ public class UserService implements IUserService {
         // Đặt Role mặc định là ROLE_USER
         Role defaultRole = roleRepository.findRoleByName(Role.RoleType.ROLE_USER)
                 .orElseThrow(() -> new RuntimeException("Lỗi: Không tìm thấy quyền người dùng."));
-        user.setRoles(List.of(defaultRole)); // Gán role cho người dùng
+        user.setRoles(Set.of(defaultRole)); // Gán role cho người dùng
 
         // Đặt ảnh đại diện mặc định
         user.setAvatar("https://firebasestorage.googleapis.com/v0/b/home-dn.appspot.com/o/images%2Favatar.jpg?alt=media&token=f43bdd14-8aa5-4364-afc7-509f6f72a172");
@@ -107,6 +107,7 @@ public class UserService implements IUserService {
     }
 
     @Override
+
     public void updateUser(User currentUser, UserProfileDTO userProfileDTO) {
         currentUser.setFullName(userProfileDTO.getFullName());
         if(Objects.equals(userProfileDTO.getAvatar(), null)){
@@ -136,5 +137,11 @@ public class UserService implements IUserService {
     @Override
     public Iterable<User> findByFullNameContainingIgnoreCase(String username) {
         return userRepository.findByFullNameContainingIgnoreCase(username);
+    }
+
+    @Override
+    public User findByEmail(String email) {
+        return userRepository.findByEmail(email);
+
     }
 }

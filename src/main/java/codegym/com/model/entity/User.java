@@ -16,6 +16,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "users")
@@ -61,7 +62,10 @@ public class User {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
-    private List<Role> roles;
+    private Set<Role> roles;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    private Set<UserStatus> userStatuses;
 
     @OneToMany(mappedBy = "user")
     @JsonManagedReference
