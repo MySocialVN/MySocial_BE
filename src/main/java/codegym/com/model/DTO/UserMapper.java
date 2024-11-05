@@ -10,6 +10,7 @@ public class UserMapper {
         dto.setId(user.getId());
         dto.setFullName(user.getFullName());
         dto.setAvatar(user.getAvatar());
+        dto.setBackground(user.getBackground());
         dto.setEmail(user.getEmail());
         dto.setUsername(user.getUsername());
         dto.setBirthday(user.getBirthday());

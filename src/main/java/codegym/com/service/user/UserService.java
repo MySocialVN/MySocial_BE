@@ -87,6 +87,8 @@ public class UserService implements IUserService {
 
         // Đặt ảnh đại diện mặc định
         user.setAvatar("https://firebasestorage.googleapis.com/v0/b/home-dn.appspot.com/o/images%2Favatar.jpg?alt=media&token=f43bdd14-8aa5-4364-afc7-509f6f72a172");
+        user.setBackground("https://firebasestorage.googleapis.com/v0/b/home-dn.appspot.com/o/images%2Favatar.jpg?alt=media&token=f43bdd14-8aa5-4364-afc7-509f6f72a172");
+
         user.setFullName(user.getUsername());
 
         // Lưu thông tin người dùng
@@ -114,6 +116,11 @@ public class UserService implements IUserService {
             currentUser.setAvatar("https://firebasestorage.googleapis.com/v0/b/home-dn.appspot.com/o/images%2Favatar.jpg?alt=media&token=f43bdd14-8aa5-4364-afc7-509f6f72a172");
         } else {
             currentUser.setAvatar(userProfileDTO.getAvatar());
+        }
+        if(Objects.equals(userProfileDTO.getBackground(), null)){
+            currentUser.setBackground("https://firebasestorage.googleapis.com/v0/b/home-dn.appspot.com/o/images%2Favatar.jpg?alt=media&token=f43bdd14-8aa5-4364-afc7-509f6f72a172");
+        } else {
+            currentUser.setBackground(userProfileDTO.getBackground());
         }
         currentUser.setPhoneNumber(userProfileDTO.getPhoneNumber());
         currentUser.setAddress(userProfileDTO.getAddress());

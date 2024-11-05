@@ -11,6 +11,7 @@ public class UserProfileMapper {
                 user.getUsername(),
                 user.getFullName(),
                 user.getAvatar(),
+                user.getBackground(),
                 user.getAddress(),
                 user.getPhoneNumber(),
                 user.getEmail(),
