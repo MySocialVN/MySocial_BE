@@ -1,12 +1,10 @@
 package codegym.com.model.entity;
 
+import codegym.com.model.enums.PrivacyLevel;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.Date;
 import java.util.List;
@@ -15,6 +13,7 @@ import java.util.List;
 @Table(name = "statuses")
 @Getter
 @Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class Status {
@@ -29,8 +28,12 @@ public class Status {
     private User user;
 
     private String content;
-    private String image;
-    private String privacy;
+
+    @OneToMany(mappedBy = "status")
+    private List<StatusImage> images;
+
+    @Enumerated(EnumType.STRING)  // Chỉ định lưu giá trị Enum dưới dạng String trong database
+    private PrivacyLevel privacy;
 
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;

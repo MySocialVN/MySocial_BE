@@ -44,6 +44,9 @@ public class User {
 
 
     private String avatar;
+    @JoinColumn
+    private String background;
+
     private String fullName;
     private String phoneNumber;
     private String address;
@@ -74,4 +77,10 @@ public class User {
     @OneToMany(mappedBy = "user")
     @JsonManagedReference
     private List<Status> statuses;
+
+    @Transient // Không lưu trong DB, chỉ dùng để hiển thị
+    private int friendCount;
+    @Transient
+    private int commonFriendCount;
+
 }
