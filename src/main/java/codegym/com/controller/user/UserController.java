@@ -25,14 +25,16 @@ public class UserController {
     private final IUserService userService;
     private final UserProfileMapper userProfileMapper;
     private final UserMapper userMapper;
+    private final UserProfileFriendMapper userProfileFriendMapper;
 
     @Autowired
     private IFriendshipService friendshipService;
 
-    public UserController(IUserService userService, UserProfileMapper userProfileMapper, UserMapper userMapper) {
+    public UserController(IUserService userService, UserProfileMapper userProfileMapper, UserMapper userMapper, UserProfileFriendMapper userProfileFriendMapper) {
         this.userService = userService;
         this.userProfileMapper = userProfileMapper;
         this.userMapper = userMapper;
+        this.userProfileFriendMapper = userProfileFriendMapper;
     }
 
     @PostMapping("/register")
@@ -200,8 +202,95 @@ public class UserController {
         return ResponseEntity.ok(userDTOS);
     }
 
+    @GetMapping("/friends")
+    public ResponseEntity<List<FriendDTO>> getUserFriends() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Long id = null;
+
+        if (authentication != null && authentication.getPrincipal() instanceof UserPrinciple) {
+            UserPrinciple userDetails = (UserPrinciple) authentication.getPrincipal();
+            id = userDetails.getId();
+        }
+
+        if (id == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+        }
+
+        Optional<User> optionalCurrentUser = userService.findById(id);
+
+        User currentUser = optionalCurrentUser.get();
+
+        List<FriendDTO> friends = userService.getUserFriends(id);
+        return ResponseEntity.ok(friends);
+    }
+
+
+    @GetMapping("/user/view/{id}")
+    public ResponseEntity<UserProfileFriendDTO> viewUsers(@PathVariable("id") Long id) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Long idCurrentUser = null;
+
+        if (authentication != null && authentication.getPrincipal() instanceof UserPrinciple) {
+            UserPrinciple userDetails = (UserPrinciple) authentication.getPrincipal();
+            idCurrentUser = userDetails.getId();
+        }
+
+        if (idCurrentUser == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+        }
+
+        Optional<User> optionalCurrentUser = userService.findById(idCurrentUser);
+
+        User currentUser = optionalCurrentUser.get();
+
+        Optional<User> optionalUserView = userService.findById(id);
+
+        User currentUserView = optionalUserView.get();
+
+
+        UserProfileFriendDTO profileFriendDTO = userProfileFriendMapper.toDTO(currentUserView);
+        boolean isFriend = friendshipService.isFriend(currentUser, currentUserView)||friendshipService.isFriend(currentUserView, currentUser);
+        boolean isYouSendRequest = friendshipService.isYouSendRequest(currentUser, currentUserView);
+        boolean isYourSendRequest = friendshipService.isYouSendRequest(currentUserView, currentUser);
+        int friendCount = friendshipService.countAcceptedFriends(id);
+        int mutualFriendCount = friendshipService.countCommonFriends(idCurrentUser, id);
+        profileFriendDTO.setFriend(isFriend);
+        profileFriendDTO.setYouSendRequest(isYouSendRequest);
+        profileFriendDTO.setYourSendRequest(isYourSendRequest);
+        profileFriendDTO.setFriendCount(friendCount);
+        profileFriendDTO.setMutualFriendCount(mutualFriendCount);
+
+
+        return ResponseEntity.ok(profileFriendDTO);
+    }
+
+    @GetMapping("/common-friends/{friendId}")
+    public ResponseEntity<List<FriendDTO>> getCommonFriends(@PathVariable("friendId") Long friendId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Long id = null;
+
+        if (authentication != null && authentication.getPrincipal() instanceof UserPrinciple) {
+            UserPrinciple userDetails = (UserPrinciple) authentication.getPrincipal();
+            id = userDetails.getId();
+        }
+
+        if (id == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+        }
+
+        Optional<User> optionalCurrentUser = userService.findById(id);
+
+        User currentUser = optionalCurrentUser.get();
+
+        List<FriendDTO> friends = userService.getMutualUserFriends(id,friendId);
+        return ResponseEntity.ok(friends);
+    }
+
+
 
 }
+
+
 
 
 

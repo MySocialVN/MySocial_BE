@@ -1,10 +1,13 @@
 package codegym.com.service.user;
 
+import codegym.com.model.DTO.FriendDTO;
 import codegym.com.model.DTO.UserPrinciple;
 import codegym.com.model.DTO.UserProfileDTO;
+import codegym.com.model.entity.Friendship;
 import codegym.com.model.entity.Role;
 import codegym.com.model.entity.User;
 
+import codegym.com.repository.IFriendshipRepository;
 import codegym.com.repository.IRoleRepository;
 import codegym.com.repository.IUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,10 +17,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService implements IUserService {
@@ -30,6 +31,9 @@ public class UserService implements IUserService {
     @Lazy
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private IFriendshipRepository friendshipRepository;
 
 
     @Override
@@ -150,5 +154,49 @@ public class UserService implements IUserService {
     public User findByEmail(String email) {
         return userRepository.findByEmail(email);
 
+    }
+
+    @Override
+    public List<FriendDTO> getUserFriends(Long userId) {
+        // Lấy danh sách bạn bè đã chấp nhận
+        List<User> friendships = friendshipRepository.findAllAcceptedFriends(userId);
+
+        // Ánh xạ danh sách bạn bè thành danh sách FriendDTO
+        return friendships.stream().map(friendship -> {
+            // Lấy bạn bè
+            User friend = friendship;
+
+            // Tính số lượng bạn bè chung
+            int mutualFriendCount = friendshipRepository.countCommonFriends(userId, friend.getId());
+
+            // Trả về đối tượng FriendDTO
+            return new FriendDTO(
+                    friend.getId(),
+                    friend.getAvatar(),
+                    friend.getFullName(),
+                    mutualFriendCount
+            );
+        }).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<FriendDTO> getMutualUserFriends(Long userId1, Long userId2) {
+        List<User> friendships = friendshipRepository.findCommonFriends(userId1, userId2);
+
+        return friendships.stream().map(friendship -> {
+            // Lấy bạn bè
+            User friend = friendship;
+
+            // Tính số lượng bạn bè chung
+            int mutualFriendCount = friendshipRepository.countCommonFriends(userId1, friend.getId());
+
+            // Trả về đối tượng FriendDTO
+            return new FriendDTO(
+                    friend.getId(),
+                    friend.getAvatar(),
+                    friend.getFullName(),
+                    mutualFriendCount
+            );
+        }).collect(Collectors.toList());
     }
 }

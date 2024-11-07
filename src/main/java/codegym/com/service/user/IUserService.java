@@ -1,10 +1,12 @@
 package codegym.com.service.user;
 
+import codegym.com.model.DTO.FriendDTO;
 import codegym.com.model.DTO.UserProfileDTO;
 import codegym.com.model.entity.User;
 import codegym.com.service.IGenerateService;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface IUserService extends IGenerateService<User>, UserDetailsService {
@@ -25,6 +27,8 @@ public interface IUserService extends IGenerateService<User>, UserDetailsService
 
     User findByEmail(String email);
 
+    public List<FriendDTO> getUserFriends(Long userId);
 
+    public List<FriendDTO> getMutualUserFriends(Long userId1,Long userId2  );
 
 }
