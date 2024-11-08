@@ -1,4 +1,5 @@
 package codegym.com.service.friendship;
+import codegym.com.model.DTO.FriendDTO;
 import codegym.com.model.entity.Friendship;
 import codegym.com.model.entity.FriendshipStatus;
 import codegym.com.model.entity.User;
@@ -8,7 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class FriendshipService implements IFriendshipService {
@@ -94,6 +97,16 @@ return friendshipRepository.existsByUserAndFriend(user, friend);    }
         } else {
             throw new RuntimeException("Friend request not found or already accepted.");
         }
+    }
+
+    @Override
+    public int countAcceptedFriends(Long userId) {
+        return friendshipRepository.countAcceptedFriends(userId);
+    }
+
+    @Override
+    public int countCommonFriends(Long userId1, Long userId2) {
+        return friendshipRepository.countCommonFriends(userId1, userId2);
     }
 }
 
